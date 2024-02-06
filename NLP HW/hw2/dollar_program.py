@@ -17,19 +17,22 @@ def find_dollar_amounts(text):
             (?:million|billion)?\b)|
 
 
-
             # Matches numerical dollar amounts possibly followed by "and" cents
             (\d{1,3}(?:,\d{3})*
             (?:\.\d{1,2})?
             \s*
-            (dollar|dollars)\s*
+            (?:dollar|dollars)\s*
             (and\s*\d{1,2}\s*
             (cent|cents))?)|
             
             # Matches simple $ amounts with optional decimals
             (\$\d{1,3}
             (?:,\d{3})*
-            (?:\.\d{1,2})?
+            (?:\.\d{1,2})?|
+
+
+            # Matches some 'words' of numbers
+            \b(?:a|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty)\s+dollars\b
         )
     """
     matches = re.findall(dollar_regex, text, re.IGNORECASE | re.VERBOSE)
@@ -38,7 +41,7 @@ def find_dollar_amounts(text):
     return cleaned_matches
 
 # read from a file
-input_file_path = 'regexp_corpora/all-OANC.TXT'
+input_file_path = 'regexp_corpora/test_dollar_phone_corpus.txt'
 with open(input_file_path, 'r', encoding='utf-8') as file:
     text_to_search = file.read()
 
