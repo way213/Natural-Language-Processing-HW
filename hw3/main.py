@@ -15,7 +15,7 @@
 
 import csv
 from collections import defaultdict
-
+import time
 from data.score import score
 
 training_file = "data/WSJ_02-21.pos"
@@ -34,11 +34,11 @@ with open(training_file, 'r', encoding='utf8') as csv_file:
         line = line.strip()
         if line:
             # Process token and tag
-            word, tag = line.split()
+            word, current_tag = line.split()
             # load this into our dictionary... also keeping track of count
-            prior_tags_count[prior_tag][tag] += 1
+            prior_tags_count[prior_tag][current_tag] += 1
             # now the new prior tag is the last tag extracted
-            prior_tag = tag
+            prior_tag = current_tag
         # if there is nothing in 'line' (which means that it is the end of a sentence, reset the prior tag to 'start')
         else:
             prior_tag = 'start'
@@ -46,10 +46,10 @@ with open(training_file, 'r', encoding='utf8') as csv_file:
     # transform the variable 'prior_tags_counts' to hold the probability of each tag - instead of the count of each tag under a prior tag.
     # (dividing total count in each instance to get probability)
                 
-for prior_tag, tag_count in prior_tags_count.items():
-    total_count = sum(tag_count.values())
-    for tag, count in tag_count.items():
-        tag_count[tag]=count/total_count
+    for prior_tag, tag_count in prior_tags_count.items():
+        total_count = sum(tag_count.values())
+        for tag, count in tag_count.items():
+            tag_count[tag]=count/total_count
 # ------------------------------------------------------------------------------------------------------------------------------------
 # Part 4: Create the likelihood table
 # Calculates likelihoods by dividing by the total count of the tag
@@ -66,17 +66,16 @@ with open(training_file, 'r', encoding='utf8') as csv_file:
             words_and_tags[tag][word] += 1
 
     # for each word in each tag, calculate the probability via dividing count of word with total count of words in each tag
-for tag, word_count in words_and_tags.items():
-    total_tag_count = sum(word_count.values())
-    for word, count in word_count.items():
-        word_count[word] = count / total_tag_count
+    for tag, word_count in words_and_tags.items():
+        total_tag_count = sum(word_count.values())
+        for word, count in word_count.items():
+            word_count[word] = count / total_tag_count
 
 # ------------------------------------------------------------------------------------------------------------------------------------
 # Step 5: Generate a set of unique words and tags
 # Use a set to store unique words encountered in the training corpus
 all_unique_words_in_data=set()
 all_unique_tags_in_data=set()
-
 
 with open(training_file, 'r', encoding='utf8') as csv_file:
     for line in csv_file:
@@ -102,7 +101,7 @@ def viterbi(sentence, unique_tags, prior_probabilities, tag_probabilities):
 
     # Base case: initialize the probabilities for the first word
     for tag in unique_tags:
-        # Use a small value for OOV words
+        # Use a small value for OOV words (1e-10), via .get()
         V[0][tag] = prior_probabilities['start'].get(tag, 0) * tag_probabilities[tag].get(sentence[0], 1e-10) 
         path[tag] = [tag]
 
@@ -146,11 +145,12 @@ with open(testing_file, 'r', encoding='utf8') as csv_file:
             word = line
             # load this into our sentence variable
             current_sentence.append(word)
-            # if there is nothing to split (which means that it is the end of a sentence)
-            # run the viterbi algo on current sentence
+
+        # if there is nothing to split (which means that it is an empty line thus the end of a sentence)
+        # run the viterbi algo on current sentence
         else:
             result = viterbi(current_sentence, all_unique_tags_in_data, prior_tags_count, words_and_tags)
-                # Write each word and its predicted tag to the file
+            # Write each word and its predicted tag to the file
             for word, tag in zip(current_sentence, result):
                 f.write(f"{word}\t{tag}\n")
                 # Write an empty line to separate sentences
@@ -158,6 +158,11 @@ with open(testing_file, 'r', encoding='utf8') as csv_file:
             current_sentence = []
 
     print('Created results! ')
+    f.close()
+
+print('Wait a lil bit! ')
+
+time.sleep(15)
 # now let's see our results with 'score.py'
 keyFileName = 'data/WSJ_24.pos'
 responseFileName = 'results_WSJ_24.pos'

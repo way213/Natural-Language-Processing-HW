@@ -11,6 +11,8 @@ def score (keyFileName, responseFileName):
 	if len(key) != len(response):
 		print("length mismatch between key and submitted file")
 		exit()
+		
+from data.score import score
 
 score (keyFileName, responseFileName)
 
