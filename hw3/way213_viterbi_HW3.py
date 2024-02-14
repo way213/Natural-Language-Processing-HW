@@ -41,9 +41,6 @@ development_training_file = "WSJ_02-21.pos"
 
 # here is the merged training file -- only used for final system.
 merged_training_file = merge_data('WSJ_02-21.pos', 'WSJ_24.pos')
-
-# here is the testing file, should not be changed
-testing_file = 'WSJ_24.words'
 # ------------------------------------------------------------------------------------------------------------------------------------
 # Part #3: getting the count of tags for every prior tag.
 
@@ -149,12 +146,13 @@ def viterbi(sentence, unique_tags, prior_probabilities, tag_probabilities):
     return path[state]
 
 # ------------------------------------------------------------------------------------------------------------------------------------
-# Step 7: Passing in real testing data
+# Step 7: Passing in testing data
 # now passing in the data and output the result to a file.
+testing_file = 'WSJ_23.words'
 
 with open(testing_file, 'r', encoding='utf8') as csv_file:
     # initialize empty file to store results
-    f = open("submissions.pos", "w")
+    f = open("submission.pos", "w")
     # initialize empty list to store a sentence
     current_sentence = []
 
@@ -182,11 +180,13 @@ with open(testing_file, 'r', encoding='utf8') as csv_file:
     print('Created results! ')
     f.close()
 
-# now let's see our results with 'score.py'
-keyFileName = 'WSJ_24.pos'
-responseFileName = 'submissions.pos'
 
-score (keyFileName, responseFileName)
+
+# # now let's see our results with 'score.py'
+# keyFileName = 'WSJ_24.pos'
+# responseFileName = 'submission.pos'
+# 
+# score (keyFileName, responseFileName)
 
 
 
