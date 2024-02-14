@@ -15,17 +15,41 @@
 
 import csv
 from collections import defaultdict
-import time
 from data.score import score
 
-training_file = "data/WSJ_02-21.pos"
 
+# method to merge two files together 
+def merge_data(file1, file2):
+	# Name of the newly merged file
+	new_file = 'merged_training_set.pos'
+
+	# Append content from the first file
+	with open(file1, 'r', encoding='utf8') as csv_file:
+		with open(new_file, "w", encoding='utf8') as merged_file:
+			for line in csv_file:
+				merged_file.write(line)
+
+	# Append content from the second file
+	with open(file2, 'r', encoding='utf8') as payload:
+		with open(new_file, "a", encoding='utf8') as merged_file:  # Use append mode here
+			for line in payload:
+				merged_file.write(line)
+	return new_file
+# ------------------------------------------------------------------------------------------------------------------------------------
+# development training file --
+development_training_file = "data/WSJ_02-21.pos"
+
+# here is the merged training file -- only used for final system.
+merged_training_file = merge_data('data/WSJ_02-21.pos', 'data/WSJ_24.pos')
+
+# here is the testing file, should not be changed
+testing_file = 'data/WSJ_24.words'
 # ------------------------------------------------------------------------------------------------------------------------------------
 # Part #3: getting the count of tags for every prior tag.
 
 prior_tags_count = defaultdict(lambda: defaultdict(int))
 
-with open(training_file, 'r', encoding='utf8') as csv_file:
+with open(merged_training_file, 'r', encoding='utf8') as csv_file:
     # initialize the prior tag to 'start'
     prior_tag = 'start'
 
@@ -55,7 +79,7 @@ with open(training_file, 'r', encoding='utf8') as csv_file:
 # Calculates likelihoods by dividing by the total count of the tag
 words_and_tags = defaultdict(lambda: defaultdict(int))
 
-with open(training_file, 'r', encoding='utf8') as csv_file:
+with open(merged_training_file, 'r', encoding='utf8') as csv_file:
     for line in csv_file:
         # strip the line first
         line = line.strip()
@@ -77,7 +101,7 @@ with open(training_file, 'r', encoding='utf8') as csv_file:
 all_unique_words_in_data=set()
 all_unique_tags_in_data=set()
 
-with open(training_file, 'r', encoding='utf8') as csv_file:
+with open(merged_training_file, 'r', encoding='utf8') as csv_file:
     for line in csv_file:
         # strip the line first
         line = line.strip()
@@ -126,13 +150,11 @@ def viterbi(sentence, unique_tags, prior_probabilities, tag_probabilities):
 
 # ------------------------------------------------------------------------------------------------------------------------------------
 # Step 7: Passing in real testing data
-
 # now passing in the data and output the result to a file.
 
-testing_file = 'data/WSJ_24.words'
 with open(testing_file, 'r', encoding='utf8') as csv_file:
     # initialize empty file to store results
-    f = open("results_WSJ_24.pos", "w")
+    f = open("WSJ_24_RESULTS.pos", "w")
     # initialize empty list to store a sentence
     current_sentence = []
 
@@ -160,11 +182,12 @@ with open(testing_file, 'r', encoding='utf8') as csv_file:
     print('Created results! ')
     f.close()
 
-print('Wait a lil bit! ')
-
-time.sleep(15)
 # now let's see our results with 'score.py'
 keyFileName = 'data/WSJ_24.pos'
-responseFileName = 'results_WSJ_24.pos'
+responseFileName = 'WSJ_24_RESULTS.pos'
 
 score (keyFileName, responseFileName)
+
+
+
+
