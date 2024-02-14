@@ -2,7 +2,7 @@ keyFileName = 'data/WSJ_24.pos'
 responseFileName = 'data/WSJ_02-21.pos'
 
 # Assuming the score module is correctly imported and used elsewhere
-from data.score import score
+from hw3.score import score
 
 
 def merge_data(file1, file2):

@@ -13,9 +13,9 @@
 # Make a list of all the words that you find in the training corpus. Any word that is not in this list is out of vocabulary (OOV). You may find OOV words when running the system and will have to treat them specially because otherwise they will have a likelihood of 0 for all POS tags.
 # Implement a Viterbi HMM POS tagger using the prior probabilities and likelihood tables. This program should take a corpus in the format of the test corpus and produce output in the format of the training corpus. As per 2, in the development stage of your program-writing use the training corpus to create the tables and run the system on the development corpus. For the final system, merge the training and development and run on the test.
 
-import csv
+
 from collections import defaultdict
-from data.score import score
+from score import score 
 
 
 # method to merge two files together 
@@ -37,13 +37,13 @@ def merge_data(file1, file2):
 	return new_file
 # ------------------------------------------------------------------------------------------------------------------------------------
 # development training file --
-development_training_file = "data/WSJ_02-21.pos"
+development_training_file = "WSJ_02-21.pos"
 
 # here is the merged training file -- only used for final system.
-merged_training_file = merge_data('data/WSJ_02-21.pos', 'data/WSJ_24.pos')
+merged_training_file = merge_data('WSJ_02-21.pos', 'WSJ_24.pos')
 
 # here is the testing file, should not be changed
-testing_file = 'data/WSJ_24.words'
+testing_file = 'WSJ_24.words'
 # ------------------------------------------------------------------------------------------------------------------------------------
 # Part #3: getting the count of tags for every prior tag.
 
@@ -154,7 +154,7 @@ def viterbi(sentence, unique_tags, prior_probabilities, tag_probabilities):
 
 with open(testing_file, 'r', encoding='utf8') as csv_file:
     # initialize empty file to store results
-    f = open("WSJ_24_RESULTS.pos", "w")
+    f = open("submissions.pos", "w")
     # initialize empty list to store a sentence
     current_sentence = []
 
@@ -183,8 +183,8 @@ with open(testing_file, 'r', encoding='utf8') as csv_file:
     f.close()
 
 # now let's see our results with 'score.py'
-keyFileName = 'data/WSJ_24.pos'
-responseFileName = 'WSJ_24_RESULTS.pos'
+keyFileName = 'WSJ_24.pos'
+responseFileName = 'submissions.pos'
 
 score (keyFileName, responseFileName)
 
